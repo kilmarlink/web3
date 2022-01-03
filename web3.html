@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+    <div class="adress"></div>
+    <script type="text/javascript">
+        (async () => {
+            if(window.ethereum){
+                await window.ethereum.send('eth_requestAccounts');
+                window.web3 = new Web3(window.ethereum);
+            }
+
+            var accounts = await web3.eth.getAccounts;
+            accounts = accounts[0];
+
+            const ethereum = window.ethereum;
+            ethereum
+                .request({ method: 'eth_chainId' })
+                .then((chainId) => {
+                    console.log(`hexadecimal string: ${chainId}`);
+                    console.log(`decimal number: ${parseInt(chainId, 16)}`);
+                })
+                .catch((error) => {
+                    console.error(`Error fetching chainId: ${error.code}: ${error.message}`);
+                });
+
+            ethereum
+                .request({
+                    method: 'eth_getBlockByNumber',
+                    params: ['latest', true],
+                })
+                .then((block) => {
+                    console.log(`Block ${block.number}:`, block);
+                })
+                .catch((error) => {
+                    console.error(
+                    `Error fetching last block: ${error.message}.
+                    Code: ${error.code}. Data: ${error.data}`
+                    );
+                });
+
+            ethereum
+                .request({ method: 'eth_accounts' })
+                .then((accounts) => {
+                    $( ".adress" ).append(`<p>Direccion de Cartera: ${accounts.join('\n')} </p>`);
+                    console.log(`Accounts:\n${accounts.join('\n')}`);
+                })
+                .catch((error) => {
+                    console.error(
+                    `Error fetching accounts: ${error.message}.
+                    Code: ${error.code}. Data: ${error.data}`
+                    );
+                });
+
+
+        })();
+    </script>
+</body>
+</html>
